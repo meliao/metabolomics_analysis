@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Owen Melia" />
+
+<meta name="date" content="2019-11-11" />
+
+<title>Examining the Effect of Covariates</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">workflowr</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/meliao/metabolomics">
+    <span class="fa fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Examining the Effect of Covariates</h1>
+<h4 class="author">Owen Melia</h4>
+<h4 class="date">11/11/2019</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2019-11-12
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>metabolomics_analysis/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.4.0). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20191108code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20191108)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20191108code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20191108)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcommeliaometabolomicsanalysistree0bd3e7e91c2e247f88b3c6b9642581b5cb49fe52targetblank0bd3e7ea"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/meliao/metabolomics_analysis/tree/0bd3e7e91c2e247f88b3c6b9642581b5cb49fe52" target="_blank">0bd3e7e</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcommeliaometabolomicsanalysistree0bd3e7e91c2e247f88b3c6b9642581b5cb49fe52targetblank0bd3e7ea" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rproj.user/
+    Ignored:    workflowr.Rproj
+
+Untracked files:
+    Untracked:  code/load_imputed_data.R
+    Untracked:  code/regress_out_dates.R
+    Untracked:  code/regress_out_dates.sh
+    Untracked:  code/regress_out_dates_inverse_normalize.sh
+    Untracked:  docs/figure/
+
+Unstaged changes:
+    Deleted:    docs/.nojekyll
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the R Markdown and HTML files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view them.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/meliao/metabolomics_analysis/blob/0bd3e7e91c2e247f88b3c6b9642581b5cb49fe52/analysis/sample_covariate_analysis.Rmd" target="_blank">0bd3e7e</a>
+</td>
+<td>
+meliao
+</td>
+<td>
+2019-11-12
+</td>
+<td>
+Start workflowr project.
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="load-covariates" class="section level2">
+<h2>Load Covariates</h2>
+<p>With the metabolite data came metadata about the experiment. I’d like to consider these as covariates and see if we can control for batch effects.</p>
+<pre class="r"><code>covariates &lt;- read.csv(&#39;~/projects/metabolomics/data/metabolomics_converted/imputed-data-7-11-2016-sample-metadata.txt&#39;, sep = &#39;\t&#39;)
+summary(covariates)</code></pre>
+<pre><code>      DIAG_code                 PARAM_BOX_LOCATION PARAM_LC_COLUMN
+ DIAG-23021:   1   Lipomics Box 10 Pos C9:   2     Min.   :1.000  
+ DIAG-23022:   1   Lipomics Box 2 Pos H6 :   2     1st Qu.:1.000  
+ DIAG-23023:   1   Lipomics Box 1 Pos A1 :   1     Median :1.000  
+ DIAG-23024:   1   Lipomics Box 1 Pos A2 :   1     Mean   :1.492  
+ DIAG-23025:   1   Lipomics Box 1 Pos A3 :   1     3rd Qu.:2.000  
+ DIAG-23026:   1   Lipomics Box 1 Pos A4 :   1     Max.   :2.000  
+ (Other)   :1113   (Other)               :1111                    
+ PARAM_MANIFEST_ORDER PARAM_RUN_DAY   PARAM_SPECIMEN_CONDITION
+ Min.   :   1.0       Min.   : 1.00   Acceptable:1119         
+ 1st Qu.: 280.5       1st Qu.:13.00                           
+ Median : 564.0       Median :25.00                           
+ Mean   : 646.7       Mean   :24.91                           
+ 3rd Qu.: 843.5       3rd Qu.:37.00                           
+ Max.   :1654.0       Max.   :50.00                           
+                                                              
+ BATCH_ID_LCPOSEAR BATCH_ID_LCPOSLAT BATCH_ID_LCNEG  BATCH_ID_LCPOLAR
+ Min.   :68297     Min.   :68293     Min.   :68363   Min.   :68305   
+ 1st Qu.:68503     1st Qu.:68499     1st Qu.:68586   1st Qu.:68511   
+ Median :68757     Median :68753     Median :68824   Median :68765   
+ Mean   :68719     Mean   :68738     Mean   :68825   Mean   :68741   
+ 3rd Qu.:68997     3rd Qu.:68993     3rd Qu.:69088   3rd Qu.:69005   
+ Max.   :69196     Max.   :69251     Max.   :69255   Max.   :69200   
+                                                                     </code></pre>
+<p>It seems that we should consider all of these as factors</p>
+<pre class="r"><code>covariates &lt;- read.csv(&#39;~/projects/metabolomics/data/metabolomics_converted/imputed-data-7-11-2016-sample-metadata.txt&#39;,
+                       sep = &#39;\t&#39;,
+                       colClasses = c(&#39;factor&#39;))
+rownames(covariates) &lt;- covariates$DIAG_code
+n_unique &lt;- function(x){length(levels(x))}
+unique_factors &lt;- sapply(covariates, n_unique)
+unique_factors</code></pre>
+<pre><code>               DIAG_code       PARAM_BOX_LOCATION          PARAM_LC_COLUMN 
+                    1119                     1117                        2 
+    PARAM_MANIFEST_ORDER            PARAM_RUN_DAY PARAM_SPECIMEN_CONDITION 
+                    1117                       50                        1 
+       BATCH_ID_LCPOSEAR        BATCH_ID_LCPOSLAT           BATCH_ID_LCNEG 
+                      13                       14                       15 
+        BATCH_ID_LCPOLAR 
+                      14 </code></pre>
+</div>
+<div id="investigating-redundant-covariates" class="section level2">
+<h2>Investigating Redundant Covariates</h2>
+<p>I would guess that there is a lot of redundancy in these data. I will first only look at the batch IDs.</p>
+<pre class="r"><code>list_to_drop &lt;- c(&#39;DIAG_code&#39;, 
+                  &#39;PARAM_BOX_LOCATION&#39;, 
+                  &#39;PARAM_MANIFEST_ORDER&#39;, 
+                  &#39;PARAM_SPECIMEN_CONDITION&#39;,
+                  &#39;PARAM_LC_COLUMN&#39;)
+for(i in list_to_drop){
+  covariates[[i]] &lt;- NULL
+}</code></pre>
+<p>I will plot a correlation heatmap. The results shown here could be an artifact of the order that R assigned factor levels.</p>
+<pre class="r"><code>corr_heatmap &lt;-function(df, title = &quot;Correlation&quot;){
+  cor_df &lt;- data.frame(cor(df))
+  cor_df$rows &lt;- rownames(cor_df)
+  df_for_plot &lt;- cor_df %&gt;% pivot_longer(-rows, names_to = &#39;columns&#39;, values_to =&#39;correlation&#39;)
+  plt &lt;- (ggplot(data = df_for_plot, aes(rows, columns, fill = correlation))
+          + geom_tile()
+          + theme(axis.text.x = element_text(angle = 90))
+          + labs(title = title))
+  
+  return(plt)
+}
+
+cov_numeric &lt;- data.frame(sapply(covariates, as.numeric))
+bb &lt;- corr_heatmap(cov_numeric)
+  
+bb</code></pre>
+<p><img src="figure/sample_covariate_analysis.Rmd/plot_corr_heatmap-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>I think I will now only focus on <code>PARAM_RUN_DAY</code> and <code>BATCH_ID_LCPOLAR</code>.</p>
+<pre class="r"><code>list_to_drop &lt;- c(&#39;BATCH_ID_LCPOSLAT&#39;,
+                  &#39;BATCH_ID_LCPOSEAR&#39;,
+                  &#39;BATCH_ID_LCNEG&#39;)
+for(i in list_to_drop){
+  covariates[[i]] &lt;- NULL
+}</code></pre>
+</div>
+<div id="regressing-out-covariates" class="section level2">
+<h2>Regressing Out Covariates</h2>
+<p>I will choose a random meatabolite to regress:</p>
+<p><span class="math display">\[ Metabolite = \sum \beta_i \ \text{BATCH_ID_LCPOLAR}_i + \sum \beta_i \ \text{PARAM_RUN_DAY}_i \]</span></p>
+<pre class="r"><code>covariate_regression &lt;- function(response, covariates){
+  covariates$metabolite &lt;- response
+  reg_obj  &lt;- lm(metabolite ~ . , data = covariates)
+  return(reg_obj)
+}
+
+single_reg_obj &lt;- covariate_regression(imputed_df$X1.2.dilinoleoyl.GPC..18.2.18.2., covariates)
+
+print(summary(single_reg_obj))</code></pre>
+<pre><code>
+Call:
+lm(formula = metabolite ~ ., data = covariates)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.02969 -0.27543 -0.04596  0.22907  2.37009 
+
+Coefficients: (13 not defined because of singularities)
+                       Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)            1.125222   0.086140  13.063  &lt; 2e-16 ***
+PARAM_RUN_DAY10        0.140827   0.121821   1.156  0.24793    
+PARAM_RUN_DAY11        0.072423   0.121821   0.595  0.55230    
+PARAM_RUN_DAY12       -0.160022   0.121821  -1.314  0.18927    
+PARAM_RUN_DAY13        0.344302   0.121821   2.826  0.00480 ** 
+PARAM_RUN_DAY14        0.323985   0.121821   2.660  0.00794 ** 
+PARAM_RUN_DAY15       -0.102205   0.121821  -0.839  0.40167    
+PARAM_RUN_DAY16       -0.340057   0.121821  -2.791  0.00534 ** 
+PARAM_RUN_DAY17        0.143591   0.121821   1.179  0.23877    
+PARAM_RUN_DAY18        0.178917   0.121821   1.469  0.14221    
+PARAM_RUN_DAY19        0.044468   0.121821   0.365  0.71516    
+PARAM_RUN_DAY2        -0.112149   0.121821  -0.921  0.35746    
+PARAM_RUN_DAY20        0.095212   0.121821   0.782  0.43463    
+PARAM_RUN_DAY21        0.038140   0.121821   0.313  0.75428    
+PARAM_RUN_DAY22       -0.146143   0.121821  -1.200  0.23054    
+PARAM_RUN_DAY23        0.323213   0.121821   2.653  0.00809 ** 
+PARAM_RUN_DAY24       -0.078143   0.121821  -0.641  0.52136    
+PARAM_RUN_DAY25       -0.042089   0.121821  -0.346  0.72979    
+PARAM_RUN_DAY26        0.034642   0.121821   0.284  0.77618    
+PARAM_RUN_DAY27       -0.084039   0.121821  -0.690  0.49043    
+PARAM_RUN_DAY28       -0.180335   0.121821  -1.480  0.13908    
+PARAM_RUN_DAY29       -0.094220   0.121821  -0.773  0.43944    
+PARAM_RUN_DAY3        -0.046104   0.121821  -0.378  0.70517    
+PARAM_RUN_DAY30       -0.115511   0.121821  -0.948  0.34324    
+PARAM_RUN_DAY31       -0.022118   0.121821  -0.182  0.85596    
+PARAM_RUN_DAY32       -0.072521   0.121821  -0.595  0.55176    
+PARAM_RUN_DAY33       -0.167644   0.121821  -1.376  0.16906    
+PARAM_RUN_DAY34       -0.057893   0.120545  -0.480  0.63114    
+PARAM_RUN_DAY35        0.013470   0.121821   0.111  0.91197    
+PARAM_RUN_DAY36        0.066255   0.121821   0.544  0.58664    
+PARAM_RUN_DAY37       -0.009475   0.121821  -0.078  0.93802    
+PARAM_RUN_DAY38       -0.101167   0.123197  -0.821  0.41173    
+PARAM_RUN_DAY39       -0.022529   0.123197  -0.183  0.85494    
+PARAM_RUN_DAY4         0.041604   0.121821   0.342  0.73278    
+PARAM_RUN_DAY40        0.002465   0.123197   0.020  0.98404    
+PARAM_RUN_DAY41        0.059236   0.123197   0.481  0.63074    
+PARAM_RUN_DAY42        0.051765   0.124687   0.415  0.67811    
+PARAM_RUN_DAY43       -0.085444   0.124687  -0.685  0.49332    
+PARAM_RUN_DAY44        0.048524   0.124687   0.389  0.69723    
+PARAM_RUN_DAY45        0.035523   0.124687   0.285  0.77578    
+PARAM_RUN_DAY46        0.157388   0.124687   1.262  0.20713    
+PARAM_RUN_DAY47        0.008739   0.124687   0.070  0.94414    
+PARAM_RUN_DAY48       -0.117011   0.124687  -0.938  0.34823    
+PARAM_RUN_DAY49       -0.029526   0.126306  -0.234  0.81521    
+PARAM_RUN_DAY5         0.127588   0.121821   1.047  0.29518    
+PARAM_RUN_DAY50        0.015276   0.147112   0.104  0.91732    
+PARAM_RUN_DAY6        -0.168855   0.121821  -1.386  0.16601    
+PARAM_RUN_DAY7         0.024713   0.121821   0.203  0.83928    
+PARAM_RUN_DAY8         0.027749   0.121821   0.228  0.81985    
+PARAM_RUN_DAY9         0.112812   0.121821   0.926  0.35463    
+BATCH_ID_LCPOLAR68367        NA         NA      NA       NA    
+BATCH_ID_LCPOLAR68428        NA         NA      NA       NA    
+BATCH_ID_LCPOLAR68511        NA         NA      NA       NA    
+BATCH_ID_LCPOLAR68590        NA         NA      NA       NA    
+BATCH_ID_LCPOLAR68660        NA         NA      NA       NA    
+BATCH_ID_LCPOLAR68765        NA         NA      NA       NA    
+BATCH_ID_LCPOLAR68829        NA         NA      NA       NA    
+BATCH_ID_LCPOLAR68946        NA         NA      NA       NA    
+BATCH_ID_LCPOLAR69005        NA         NA      NA       NA    
+BATCH_ID_LCPOLAR69092        NA         NA      NA       NA    
+BATCH_ID_LCPOLAR69126        NA         NA      NA       NA    
+BATCH_ID_LCPOLAR69191        NA         NA      NA       NA    
+BATCH_ID_LCPOLAR69200        NA         NA      NA       NA    
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.4131 on 1069 degrees of freedom
+Multiple R-squared:  0.09586,   Adjusted R-squared:  0.05442 
+F-statistic: 2.313 on 49 and 1069 DF,  p-value: 1.369e-06</code></pre>
+<p>So it still looks like there are singularities. I will look at just the run day.</p>
+</div>
+<div id="regression-on-run-day" class="section level2">
+<h2>Regression on Run Day</h2>
+<pre class="r"><code>covariates &lt;- read.csv(&#39;~/projects/metabolomics/data/metabolomics_converted/imputed-data-7-11-2016-sample-metadata.txt&#39;,
+                       sep = &#39;\t&#39;,
+                       colClasses = c(&#39;factor&#39;))
+rownames(covariates) &lt;- covariates$DIAG_code
+list_to_drop &lt;- c(&#39;DIAG_code&#39;, 
+                  &#39;PARAM_BOX_LOCATION&#39;, 
+                  &#39;PARAM_MANIFEST_ORDER&#39;, 
+                  &#39;PARAM_SPECIMEN_CONDITION&#39;,
+                  &#39;PARAM_LC_COLUMN&#39;,
+                  &#39;BATCH_ID_LCPOSLAT&#39;,
+                  &#39;BATCH_ID_LCPOSEAR&#39;,
+                  &#39;BATCH_ID_LCPOLAR&#39;,
+                  &#39;BATCH_ID_LCNEG&#39;)
+for(i in list_to_drop){
+  covariates[[i]] &lt;- NULL
+}</code></pre>
+<pre class="r"><code>reg_obj &lt;- covariate_regression(imputed_df$X1.7.dimethylurate, covariates)
+print(summary(reg_obj))</code></pre>
+<pre><code>
+Call:
+lm(formula = metabolite ~ ., data = covariates)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-2.2760 -0.8370 -0.2498  0.5177 23.0152 
+
+Coefficients:
+                 Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)      1.327680   0.289404   4.588 5.01e-06 ***
+PARAM_RUN_DAY10 -0.006085   0.409280  -0.015  0.98814    
+PARAM_RUN_DAY11  0.606969   0.409280   1.483  0.13836    
+PARAM_RUN_DAY12  0.377001   0.409280   0.921  0.35719    
+PARAM_RUN_DAY13 -0.122425   0.409280  -0.299  0.76490    
+PARAM_RUN_DAY14 -0.045456   0.409280  -0.111  0.91159    
+PARAM_RUN_DAY15 -0.113284   0.409280  -0.277  0.78200    
+PARAM_RUN_DAY16  0.054852   0.409280   0.134  0.89341    
+PARAM_RUN_DAY17  0.255889   0.409280   0.625  0.53196    
+PARAM_RUN_DAY18  0.318032   0.409280   0.777  0.43730    
+PARAM_RUN_DAY19  0.200556   0.409280   0.490  0.62422    
+PARAM_RUN_DAY2   0.387829   0.409280   0.948  0.34355    
+PARAM_RUN_DAY20 -0.337187   0.409280  -0.824  0.41021    
+PARAM_RUN_DAY21 -0.094611   0.409280  -0.231  0.81723    
+PARAM_RUN_DAY22  0.122321   0.409280   0.299  0.76510    
+PARAM_RUN_DAY23  1.069867   0.409280   2.614  0.00907 ** 
+PARAM_RUN_DAY24 -0.443164   0.409280  -1.083  0.27915    
+PARAM_RUN_DAY25 -0.022576   0.409280  -0.055  0.95602    
+PARAM_RUN_DAY26  0.192579   0.409280   0.471  0.63807    
+PARAM_RUN_DAY27 -0.005340   0.409280  -0.013  0.98959    
+PARAM_RUN_DAY28 -0.078598   0.409280  -0.192  0.84775    
+PARAM_RUN_DAY29  0.057142   0.409280   0.140  0.88899    
+PARAM_RUN_DAY3  -0.090407   0.409280  -0.221  0.82522    
+PARAM_RUN_DAY30 -0.029522   0.409280  -0.072  0.94251    
+PARAM_RUN_DAY31  0.080839   0.409280   0.198  0.84346    
+PARAM_RUN_DAY32  0.045125   0.409280   0.110  0.91223    
+PARAM_RUN_DAY33  0.366636   0.409280   0.896  0.37056    
+PARAM_RUN_DAY34 -0.284553   0.404994  -0.703  0.48245    
+PARAM_RUN_DAY35 -0.160395   0.409280  -0.392  0.69521    
+PARAM_RUN_DAY36  0.011704   0.409280   0.029  0.97719    
+PARAM_RUN_DAY37 -0.088771   0.409280  -0.217  0.82833    
+PARAM_RUN_DAY38 -0.216541   0.413904  -0.523  0.60097    
+PARAM_RUN_DAY39 -0.224478   0.413904  -0.542  0.58770    
+PARAM_RUN_DAY4  -0.364637   0.409280  -0.891  0.37317    
+PARAM_RUN_DAY40 -0.158000   0.413904  -0.382  0.70274    
+PARAM_RUN_DAY41 -0.284764   0.413904  -0.688  0.49161    
+PARAM_RUN_DAY42 -0.082143   0.418911  -0.196  0.84458    
+PARAM_RUN_DAY43  0.242113   0.418911   0.578  0.56341    
+PARAM_RUN_DAY44 -0.125783   0.418911  -0.300  0.76404    
+PARAM_RUN_DAY45 -0.071468   0.418911  -0.171  0.86457    
+PARAM_RUN_DAY46  0.150187   0.418911   0.359  0.72003    
+PARAM_RUN_DAY47  0.253682   0.418911   0.606  0.54493    
+PARAM_RUN_DAY48  0.461365   0.418911   1.101  0.27099    
+PARAM_RUN_DAY49  0.114037   0.424350   0.269  0.78819    
+PARAM_RUN_DAY5   0.262662   0.409280   0.642  0.52116    
+PARAM_RUN_DAY50  0.068291   0.494252   0.138  0.89013    
+PARAM_RUN_DAY6  -0.022364   0.409280  -0.055  0.95643    
+PARAM_RUN_DAY7  -0.217734   0.409280  -0.532  0.59484    
+PARAM_RUN_DAY8   0.137738   0.409280   0.337  0.73653    
+PARAM_RUN_DAY9   0.659891   0.409280   1.612  0.10719    
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 1.388 on 1069 degrees of freedom
+Multiple R-squared:  0.04082,   Adjusted R-squared:  -0.003146 
+F-statistic: 0.9285 on 49 and 1069 DF,  p-value: 0.6148</code></pre>
+</div>
+<div id="look-at-residuals" class="section level2">
+<h2>Look at Residuals</h2>
+<p>Here I am plotting the density of the residuals in red and the normal approximation in blue.</p>
+<pre class="r"><code>resid_df &lt;- data.frame(residuals = single_reg_obj$residuals)
+
+plt &lt;- (ggplot(data = resid_df, aes(residuals))
+        + geom_density(color = &#39;red&#39;) 
+        + bar_base_theme_()
+        + stat_function(fun = dnorm, 
+                        color = &#39;blue&#39;,
+                        args = list(mean = mean(resid_df$residuals),
+                                    sd = sd(resid_df$residuals))))
+
+plt</code></pre>
+<p><img src="figure/sample_covariate_analysis.Rmd/plot_residuals-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>The residuals for this one are not normal. I will regress out the day parameter using <code>data/regress_out_dates.R</code> and <code>data/regress_out_dates.sh</code> and I will continue the analysis in <a href="date_control_regression_results.html">Date-Control Regression Results</a></p>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 3.5.1 (2018-07-02)
+Platform: x86_64-apple-darwin15.6.0 (64-bit)
+Running under: macOS  10.14.5
+
+Matrix products: default
+BLAS: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRblas.0.dylib
+LAPACK: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRlapack.dylib
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] forcats_0.4.0   stringr_1.4.0   dplyr_0.8.3     purrr_0.3.2    
+[5] readr_1.3.1     tidyr_1.0.0     tibble_2.1.1    ggplot2_3.1.1  
+[9] tidyverse_1.2.1
+
+loaded via a namespace (and not attached):
+ [1] tidyselect_0.2.5 xfun_0.9         haven_2.1.1      lattice_0.20-35 
+ [5] colorspace_1.4-1 vctrs_0.2.0      generics_0.0.2   htmltools_0.3.6 
+ [9] yaml_2.2.0       rlang_0.4.0      pillar_1.3.1     glue_1.3.1      
+[13] withr_2.1.2      modelr_0.1.5     readxl_1.3.1     lifecycle_0.1.0 
+[17] plyr_1.8.4       munsell_0.5.0    gtable_0.3.0     workflowr_1.4.0 
+[21] cellranger_1.1.0 rvest_0.3.4      evaluate_0.14    labeling_0.3    
+[25] knitr_1.25       broom_0.5.2      Rcpp_1.0.1       scales_1.0.0    
+[29] backports_1.1.4  jsonlite_1.6     fs_1.3.1         hms_0.4.2       
+[33] digest_0.6.18    stringi_1.4.3    grid_3.5.1       rprojroot_1.3-2 
+[37] cli_1.1.0        tools_3.5.1      magrittr_1.5     lazyeval_0.2.2  
+[41] crayon_1.3.4     whisker_0.4      pkgconfig_2.0.2  zeallot_0.1.0   
+[45] ellipsis_0.2.0.1 xml2_1.2.2       lubridate_1.7.4  assertthat_0.2.1
+[49] rmarkdown_1.15   httr_1.4.0       rstudioapi_0.10  R6_2.4.0        
+[53] nlme_3.1-137     git2r_0.26.1     compiler_3.5.1  </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

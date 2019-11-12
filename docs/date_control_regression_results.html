@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Owen Melia" />
+
+<meta name="date" content="2019-11-11" />
+
+<title>Date-Control Regression Results</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">workflowr</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/meliao/metabolomics">
+    <span class="fa fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Date-Control Regression Results</h1>
+<h4 class="author">Owen Melia</h4>
+<h4 class="date">11/11/2019</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2019-11-12
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>metabolomics_analysis/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.4.0). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20191108code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20191108)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20191108code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20191108)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcommeliaometabolomicsanalysistree0bd3e7e91c2e247f88b3c6b9642581b5cb49fe52targetblank0bd3e7ea"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/meliao/metabolomics_analysis/tree/0bd3e7e91c2e247f88b3c6b9642581b5cb49fe52" target="_blank">0bd3e7e</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcommeliaometabolomicsanalysistree0bd3e7e91c2e247f88b3c6b9642581b5cb49fe52targetblank0bd3e7ea" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rproj.user/
+    Ignored:    workflowr.Rproj
+
+Untracked files:
+    Untracked:  code/load_imputed_data.R
+    Untracked:  code/regress_out_dates.R
+    Untracked:  code/regress_out_dates.sh
+    Untracked:  code/regress_out_dates_inverse_normalize.sh
+
+Unstaged changes:
+    Deleted:    docs/.nojekyll
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the R Markdown and HTML files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view them.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/meliao/metabolomics_analysis/blob/0bd3e7e91c2e247f88b3c6b9642581b5cb49fe52/analysis/date_control_regression_results.Rmd" target="_blank">0bd3e7e</a>
+</td>
+<td>
+meliao
+</td>
+<td>
+2019-11-12
+</td>
+<td>
+Start workflowr project.
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="load-data" class="section level2">
+<h2>Load Data</h2>
+<pre class="r"><code>data_dir &lt;- &quot;~/projects/metabolomics/data/date_controlled/&quot;
+
+
+resid_df &lt;- read.csv(file.path(data_dir, &#39;imputed_data_date_controlled_resids.txt&#39;))
+coeff_df &lt;- read.csv(file.path(data_dir, &#39;imputed_data_date_controlled_coefficients.txt&#39;))
+pval_df &lt;- read.csv(file.path(data_dir, &#39;imputed_data_date_controlled_pvals.txt&#39;))</code></pre>
+</div>
+<div id="look-at-residuals" class="section level2">
+<h2>Look at Residuals</h2>
+<pre class="r"><code>resid_df &lt;- read.csv(&#39;~/projects/metabolomics/data/date_controlled/imputed_data_date_controlled_resids.txt&#39;)
+rownames(resid_df) &lt;- resid_df$X
+resid_df$X &lt;- NULL</code></pre>
+<pre class="r"><code>testnormality = function(df, print_bad_cols = FALSE, threshold = 0.01)
+{
+  cc=0
+  pvec = rep(NA,ncol(df))
+  for(ii in 1:ncol(df)){
+    pp = shapiro.test(df[,ii])$p
+    pvec[ii] = pp
+    if(pp &lt; threshold){
+      if(print_bad_cols){
+        print(&quot;-----&quot;)
+        print(colnames(df)[ii])
+        print(pp)
+      }
+      cc=cc+1
+    }
+  }
+  print(paste0(&quot;Non-normal columns according to Shapiro &lt; &quot;, threshold))
+  print(cc)
+  pvec
+}
+
+resid_df_normality_pvec &lt;- testnormality(resid_df)</code></pre>
+<pre><code>[1] &quot;Non-normal columns according to Shapiro &lt; 0.01&quot;
+[1] 1257</code></pre>
+</div>
+<div id="residuals-from-inverse-normalized-regression" class="section level2">
+<h2>Residuals From Inverse-Normalized Regression</h2>
+<p>I ran the same regression but with the columns of the metabolomics data matrix inverse-normalized. I’ll load the data and run the Shapiro test.</p>
+<pre class="r"><code>resid_inv_norm_df &lt;- read.csv(file.path(data_dir, &#39;imputed_data_date_controlled_inv_normalized_resids.txt&#39;))
+rownames(resid_inv_norm_df) &lt;- resid_inv_norm_df$X
+resid_inv_norm_df$X &lt;- NULL
+inv_norm_pvec &lt;- testnormality(resid_inv_norm_df)</code></pre>
+<pre><code>[1] &quot;Non-normal columns according to Shapiro &lt; 0.01&quot;
+[1] 597</code></pre>
+<p>When viewing the next plot, I had to remind myself that smaller p-values indicate that the sample is not normally distributed. The x axis plots p-values on the log scale, so the smaller p-values are on the left.</p>
+<p>A vertical line at the <span class="math inline">\(\alpha = 0.01\)</span> threshold is drawn</p>
+<pre class="r"><code>shapiro_pval_df &lt;- data.frame(standard = (resid_df_normality_pvec), 
+                      inverse_normalized = (inv_norm_pvec))
+
+shapiro_pval_df &lt;- shapiro_pval_df %&gt;% pivot_longer(everything(), names_to = &#39;distribution&#39;, values_to = &#39;pval&#39;)
+plt &lt;- (ggplot(data = shapiro_pval_df, aes(pval, fill = distribution, color = distribution))
+        + geom_density(alpha = 0.1)
+        + labs(x = &quot;Log of pvalue of Shapiro Test&quot;,
+               y = &quot;Density&quot;
+               )
+        + geom_vline(xintercept = 0.01)
+        + scale_x_log10()
+        )
+plt</code></pre>
+<p><img src="figure/date_control_regression_results.Rmd/shapiro_test_pvals-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="look-at-pvals" class="section level2">
+<h2>Look at PVals</h2>
+<pre class="r"><code>rownames(pval_df) &lt;- pval_df$X
+pval_df$X &lt;- NULL
+
+pval_df_t &lt;-data.frame(t(pval_df))
+
+summary(pval_df_t)</code></pre>
+<pre><code> PARAM_RUN_DAY1     PARAM_RUN_DAY10    PARAM_RUN_DAY11   
+ Min.   :0.000000   Min.   :0.000000   Min.   :0.000000  
+ 1st Qu.:0.000000   1st Qu.:0.000000   1st Qu.:0.000000  
+ Median :0.000000   Median :0.000000   Median :0.000000  
+ Mean   :0.066134   Mean   :0.074915   Mean   :0.080991  
+ 3rd Qu.:0.001708   3rd Qu.:0.003379   3rd Qu.:0.003738  
+ Max.   :0.991408   Max.   :0.989862   Max.   :0.992748  
+ PARAM_RUN_DAY12   PARAM_RUN_DAY13    PARAM_RUN_DAY14   
+ Min.   :0.00000   Min.   :0.000000   Min.   :0.000000  
+ 1st Qu.:0.00000   1st Qu.:0.000000   1st Qu.:0.000000  
+ Median :0.00000   Median :0.000000   Median :0.000000  
+ Mean   :0.06772   Mean   :0.065295   Mean   :0.071800  
+ 3rd Qu.:0.00217   3rd Qu.:0.001962   3rd Qu.:0.003144  
+ Max.   :0.99141   Max.   :0.992748   Max.   :0.996323  
+ PARAM_RUN_DAY15    PARAM_RUN_DAY16    PARAM_RUN_DAY17   
+ Min.   :0.000000   Min.   :0.000000   Min.   :0.000000  
+ 1st Qu.:0.000000   1st Qu.:0.000000   1st Qu.:0.000000  
+ Median :0.000000   Median :0.000000   Median :0.000000  
+ Mean   :0.065317   Mean   :0.055606   Mean   :0.073871  
+ 3rd Qu.:0.002152   3rd Qu.:0.000365   3rd Qu.:0.003117  
+ Max.   :0.993347   Max.   :0.999601   Max.   :0.992748  
+ PARAM_RUN_DAY18     PARAM_RUN_DAY19    PARAM_RUN_DAY2     
+ Min.   :0.0000000   Min.   :0.000000   Min.   :0.0000000  
+ 1st Qu.:0.0000000   1st Qu.:0.000000   1st Qu.:0.0000000  
+ Median :0.0000000   Median :0.000000   Median :0.0000000  
+ Mean   :0.0677855   Mean   :0.083898   Mean   :0.0564560  
+ 3rd Qu.:0.0003941   3rd Qu.:0.004164   3rd Qu.:0.0004061  
+ Max.   :0.9981274   Max.   :0.998220   Max.   :0.9927484  
+ PARAM_RUN_DAY20   PARAM_RUN_DAY21    PARAM_RUN_DAY22   
+ Min.   :0.00000   Min.   :0.000000   Min.   :0.000000  
+ 1st Qu.:0.00000   1st Qu.:0.000000   1st Qu.:0.000000  
+ Median :0.00000   Median :0.000000   Median :0.000000  
+ Mean   :0.06744   Mean   :0.055563   Mean   :0.068166  
+ 3rd Qu.:0.00180   3rd Qu.:0.001463   3rd Qu.:0.002538  
+ Max.   :0.99141   Max.   :0.992748   Max.   :0.999769  
+ PARAM_RUN_DAY23     PARAM_RUN_DAY24    PARAM_RUN_DAY25   
+ Min.   :0.0000000   Min.   :0.000000   Min.   :0.000000  
+ 1st Qu.:0.0000000   1st Qu.:0.000000   1st Qu.:0.000000  
+ Median :0.0000000   Median :0.000000   Median :0.000000  
+ Mean   :0.0572151   Mean   :0.060281   Mean   :0.069569  
+ 3rd Qu.:0.0000107   3rd Qu.:0.001403   3rd Qu.:0.004712  
+ Max.   :0.9947916   Max.   :0.992748   Max.   :0.990414  
+ PARAM_RUN_DAY26    PARAM_RUN_DAY27   PARAM_RUN_DAY28   
+ Min.   :0.000000   Min.   :0.00000   Min.   :0.000000  
+ 1st Qu.:0.000000   1st Qu.:0.00000   1st Qu.:0.000000  
+ Median :0.000000   Median :0.00000   Median :0.000000  
+ Mean   :0.068934   Mean   :0.06643   Mean   :0.061178  
+ 3rd Qu.:0.002593   3rd Qu.:0.00178   3rd Qu.:0.002668  
+ Max.   :0.992748   Max.   :0.99275   Max.   :0.992748  
+ PARAM_RUN_DAY29    PARAM_RUN_DAY3      PARAM_RUN_DAY30   
+ Min.   :0.000000   Min.   :0.0000000   Min.   :0.000000  
+ 1st Qu.:0.000000   1st Qu.:0.0000000   1st Qu.:0.000000  
+ Median :0.000000   Median :0.0000000   Median :0.000000  
+ Mean   :0.077949   Mean   :0.0588121   Mean   :0.067884  
+ 3rd Qu.:0.007475   3rd Qu.:0.0004547   3rd Qu.:0.002767  
+ Max.   :0.999805   Max.   :0.9998053   Max.   :0.995523  
+ PARAM_RUN_DAY31    PARAM_RUN_DAY32     PARAM_RUN_DAY33   
+ Min.   :0.000000   Min.   :0.0000000   Min.   :0.000000  
+ 1st Qu.:0.000000   1st Qu.:0.0000000   1st Qu.:0.000000  
+ Median :0.000000   Median :0.0000000   Median :0.000000  
+ Mean   :0.062721   Mean   :0.0638594   Mean   :0.060129  
+ 3rd Qu.:0.001888   3rd Qu.:0.0006737   3rd Qu.:0.001026  
+ Max.   :0.991408   Max.   :0.9967696   Max.   :0.994884  
+ PARAM_RUN_DAY34    PARAM_RUN_DAY35    PARAM_RUN_DAY36   
+ Min.   :0.000000   Min.   :0.000000   Min.   :0.000000  
+ 1st Qu.:0.000000   1st Qu.:0.000000   1st Qu.:0.000000  
+ Median :0.000000   Median :0.000000   Median :0.000000  
+ Mean   :0.066501   Mean   :0.079299   Mean   :0.077552  
+ 3rd Qu.:0.002837   3rd Qu.:0.002402   3rd Qu.:0.002739  
+ Max.   :0.991223   Max.   :0.992748   Max.   :0.992748  
+ PARAM_RUN_DAY37     PARAM_RUN_DAY38     PARAM_RUN_DAY39    
+ Min.   :0.0000000   Min.   :0.0000000   Min.   :0.0000000  
+ 1st Qu.:0.0000000   1st Qu.:0.0000000   1st Qu.:0.0000000  
+ Median :0.0000000   Median :0.0000000   Median :0.0000000  
+ Mean   :0.0642630   Mean   :0.0570177   Mean   :0.0569340  
+ 3rd Qu.:0.0005231   3rd Qu.:0.0008659   3rd Qu.:0.0006247  
+ Max.   :0.9927484   Max.   :0.9981414   Max.   :0.9878003  
+ PARAM_RUN_DAY4      PARAM_RUN_DAY40     PARAM_RUN_DAY41   
+ Min.   :0.0000000   Min.   :0.0000000   Min.   :0.000000  
+ 1st Qu.:0.0000000   1st Qu.:0.0000000   1st Qu.:0.000000  
+ Median :0.0000000   Median :0.0000000   Median :0.000000  
+ Mean   :0.0601528   Mean   :0.0611598   Mean   :0.077220  
+ 3rd Qu.:0.0006195   3rd Qu.:0.0007125   3rd Qu.:0.002657  
+ Max.   :0.9927484   Max.   :0.9998096   Max.   :0.992908  
+ PARAM_RUN_DAY42    PARAM_RUN_DAY43     PARAM_RUN_DAY44   
+ Min.   :0.000000   Min.   :0.0000000   Min.   :0.000000  
+ 1st Qu.:0.000000   1st Qu.:0.0000000   1st Qu.:0.000000  
+ Median :0.000000   Median :0.0000000   Median :0.000000  
+ Mean   :0.065784   Mean   :0.0670902   Mean   :0.072097  
+ 3rd Qu.:0.001228   3rd Qu.:0.0007858   3rd Qu.:0.001553  
+ Max.   :0.998958   Max.   :0.9930708   Max.   :0.993071  
+ PARAM_RUN_DAY45    PARAM_RUN_DAY46    PARAM_RUN_DAY47   
+ Min.   :0.000000   Min.   :0.000000   Min.   :0.000000  
+ 1st Qu.:0.000000   1st Qu.:0.000000   1st Qu.:0.000000  
+ Median :0.000000   Median :0.000000   Median :0.000000  
+ Mean   :0.074173   Mean   :0.069303   Mean   :0.085931  
+ 3rd Qu.:0.003922   3rd Qu.:0.002119   3rd Qu.:0.004849  
+ Max.   :0.998983   Max.   :0.996637   Max.   :0.999814  
+ PARAM_RUN_DAY48    PARAM_RUN_DAY49   PARAM_RUN_DAY5     
+ Min.   :0.000000   Min.   :0.00000   Min.   :0.0000000  
+ 1st Qu.:0.000000   1st Qu.:0.00000   1st Qu.:0.0000000  
+ Median :0.000000   Median :0.00000   Median :0.0000000  
+ Mean   :0.083237   Mean   :0.07415   Mean   :0.0602819  
+ 3rd Qu.:0.004931   3rd Qu.:0.00351   3rd Qu.:0.0008887  
+ Max.   :0.991790   Max.   :0.99324   Max.   :0.9969023  
+ PARAM_RUN_DAY50     PARAM_RUN_DAY6     PARAM_RUN_DAY7    
+ Min.   :0.0000000   Min.   :0.000000   Min.   :0.000000  
+ 1st Qu.:0.0000000   1st Qu.:0.000000   1st Qu.:0.000000  
+ Median :0.0000011   Median :0.000000   Median :0.000000  
+ Mean   :0.1036790   Mean   :0.060245   Mean   :0.072142  
+ 3rd Qu.:0.0181334   3rd Qu.:0.002359   3rd Qu.:0.001949  
+ Max.   :0.9950294   Max.   :0.992748   Max.   :0.992748  
+ PARAM_RUN_DAY8     PARAM_RUN_DAY9    
+ Min.   :0.000000   Min.   :0.000000  
+ 1st Qu.:0.000000   1st Qu.:0.000000  
+ Median :0.000000   Median :0.000000  
+ Mean   :0.069535   Mean   :0.073675  
+ 3rd Qu.:0.002782   3rd Qu.:0.003184  
+ Max.   :0.998183   Max.   :0.993734  </code></pre>
+<p>The pvalues are tricky to plot in a useful way. They are concentrated around zero, with a lot of outliers uniformely distributed between 0 and 1.</p>
+<pre class="r"><code>pval_df_t$metabolite &lt;- rownames(pval_df_t)
+
+pval_df_long &lt;- pval_df_t %&gt;% pivot_longer( -c(metabolite), names_to = &#39;Day&#39;, values_to = &#39;pval&#39;)
+
+plt &lt;- (ggplot(data = pval_df_long, aes(metabolite, Day, fill = pval))
+        + geom_tile()
+        + theme(axis.text.x = element_blank(),
+                axis.ticks.x = element_blank(),
+                axis.ticks.y = element_blank(),
+                axis.text.y = element_blank())
+        )
+# plt
+
+plt_2 &lt;- (ggplot(data = pval_df_long, aes(pval))
+          + geom_histogram(bins = 200))
+# plt_2</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 3.5.1 (2018-07-02)
+Platform: x86_64-apple-darwin15.6.0 (64-bit)
+Running under: macOS  10.14.5
+
+Matrix products: default
+BLAS: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRblas.0.dylib
+LAPACK: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRlapack.dylib
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] forcats_0.4.0   stringr_1.4.0   dplyr_0.8.3     purrr_0.3.2    
+[5] readr_1.3.1     tidyr_1.0.0     tibble_2.1.1    ggplot2_3.1.1  
+[9] tidyverse_1.2.1
+
+loaded via a namespace (and not attached):
+ [1] Rcpp_1.0.1       cellranger_1.1.0 plyr_1.8.4       pillar_1.3.1    
+ [5] compiler_3.5.1   git2r_0.26.1     workflowr_1.4.0  tools_3.5.1     
+ [9] zeallot_0.1.0    digest_0.6.18    lubridate_1.7.4  jsonlite_1.6    
+[13] evaluate_0.14    lifecycle_0.1.0  nlme_3.1-137     gtable_0.3.0    
+[17] lattice_0.20-35  pkgconfig_2.0.2  rlang_0.4.0      cli_1.1.0       
+[21] rstudioapi_0.10  yaml_2.2.0       haven_2.1.1      xfun_0.9        
+[25] withr_2.1.2      xml2_1.2.2       httr_1.4.0       knitr_1.25      
+[29] hms_0.4.2        generics_0.0.2   fs_1.3.1         vctrs_0.2.0     
+[33] rprojroot_1.3-2  grid_3.5.1       tidyselect_0.2.5 glue_1.3.1      
+[37] R6_2.4.0         readxl_1.3.1     rmarkdown_1.15   modelr_0.1.5    
+[41] magrittr_1.5     whisker_0.4      backports_1.1.4  scales_1.0.0    
+[45] htmltools_0.3.6  rvest_0.3.4      assertthat_0.2.1 colorspace_1.4-1
+[49] labeling_0.3     stringi_1.4.3    lazyeval_0.2.2   munsell_0.5.0   
+[53] broom_0.5.2      crayon_1.3.4    </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
