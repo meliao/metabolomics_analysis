@@ -357,7 +357,7 @@ div.tocify {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/meliao/metabolomics">
+  <a href="https://github.com/meliao/metabolomics_analysis">
     <span class="fa fa-github"></span>
      
     Source code
@@ -388,7 +388,7 @@ div.section {
 
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
-<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span>
 </button>
 </p>
 <div id="workflowr-report" class="collapse">
@@ -397,7 +397,7 @@ div.section {
 <a data-toggle="tab" href="#summary">Summary</a>
 </li>
 <li>
-<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> </a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -409,7 +409,7 @@ div.section {
 <strong>Last updated:</strong> 2019-11-12
 </p>
 <p>
-<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 1
 </p>
 <p>
 <strong>Knit directory:</strong> <code>metabolomics_analysis/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
@@ -425,12 +425,12 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges"> <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted changes </a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div id="strongRMarkdownfilestronguncommittedchanges" class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+<p>The R Markdown file has unstaged changes. To know which version of the R Markdown file created these results, you’ll want to first commit it to the Git repo. If you’re still working on the analysis, you can ignore this warning. When you’re finished, you can run <code>wflow_publish</code> to commit the R Markdown file and build the HTML.</p>
 </div>
 </div>
 </div>
@@ -497,10 +497,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcommeliaometabolomicsanalysistree0bd3e7e91c2e247f88b3c6b9642581b5cb49fe52targetblank0bd3e7ea"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/meliao/metabolomics_analysis/tree/0bd3e7e91c2e247f88b3c6b9642581b5cb49fe52" target="_blank">0bd3e7e</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcommeliaometabolomicsanalysistreef985f755b7cc8773b5b10fdbdcad2337af4c3579targetblankf985f75a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/meliao/metabolomics_analysis/tree/f985f755b7cc8773b5b10fdbdcad2337af4c3579" target="_blank">f985f75</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcommeliaometabolomicsanalysistree0bd3e7e91c2e247f88b3c6b9642581b5cb49fe52targetblank0bd3e7ea" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcommeliaometabolomicsanalysistreef985f755b7cc8773b5b10fdbdcad2337af4c3579targetblankf985f75a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -511,14 +511,10 @@ Ignored files:
     Ignored:    workflowr.Rproj
 
 Untracked files:
-    Untracked:  code/load_imputed_data.R
-    Untracked:  code/regress_out_dates.R
-    Untracked:  code/regress_out_dates.sh
-    Untracked:  code/regress_out_dates_inverse_normalize.sh
-    Untracked:  docs/figure/
+    Untracked:  .Rhistory
 
 Unstaged changes:
-    Deleted:    docs/.nojekyll
+    Modified:   analysis/sample_covariate_analysis.Rmd
 
 </code></pre>
 <p>
@@ -557,6 +553,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/meliao/metabolomics_analysis/f985f755b7cc8773b5b10fdbdcad2337af4c3579/docs/sample_covariate_analysis.html" target="_blank">f985f75</a>
+</td>
+<td>
+meliao
+</td>
+<td>
+2019-11-12
+</td>
+<td>
+Added docs
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -656,10 +669,47 @@ bb &lt;- corr_heatmap(cov_numeric)
   
 bb</code></pre>
 <p><img src="figure/sample_covariate_analysis.Rmd/plot_corr_heatmap-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>I think I will now only focus on <code>PARAM_RUN_DAY</code> and <code>BATCH_ID_LCPOLAR</code>.</p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_corr_heatmap-1">
+Past versions of plot_corr_heatmap-1.png
+</button>
+</p>
+<div id="fig-plot_corr_heatmap-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/meliao/metabolomics_analysis/blob/f985f755b7cc8773b5b10fdbdcad2337af4c3579/docs/figure/sample_covariate_analysis.Rmd/plot_corr_heatmap-1.png" target="_blank">f985f75</a>
+</td>
+<td>
+meliao
+</td>
+<td>
+2019-11-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>I think I will now only focus on <code>PARAM_RUN_DAY</code> and <code>BATCH_ID_LCNEG</code>.</p>
 <pre class="r"><code>list_to_drop &lt;- c(&#39;BATCH_ID_LCPOSLAT&#39;,
                   &#39;BATCH_ID_LCPOSEAR&#39;,
-                  &#39;BATCH_ID_LCNEG&#39;)
+                  &#39;BATCH_ID_LCPOLAR&#39;)
 for(i in list_to_drop){
   covariates[[i]] &lt;- NULL
 }</code></pre>
@@ -667,7 +717,7 @@ for(i in list_to_drop){
 <div id="regressing-out-covariates" class="section level2">
 <h2>Regressing Out Covariates</h2>
 <p>I will choose a random meatabolite to regress:</p>
-<p><span class="math display">\[ Metabolite = \sum \beta_i \ \text{BATCH_ID_LCPOLAR}_i + \sum \beta_i \ \text{PARAM_RUN_DAY}_i \]</span></p>
+<p><span class="math display">\[ Metabolite = \sum \beta_i \ \text{BATCH_ID_LCNEG}_i + \sum \beta_i \ \text{PARAM_RUN_DAY}_i \]</span></p>
 <pre class="r"><code>covariate_regression &lt;- function(response, covariates){
   covariates$metabolite &lt;- response
   reg_obj  &lt;- lm(metabolite ~ . , data = covariates)
@@ -685,71 +735,72 @@ Residuals:
      Min       1Q   Median       3Q      Max 
 -1.02969 -0.27543 -0.04596  0.22907  2.37009 
 
-Coefficients: (13 not defined because of singularities)
-                       Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)            1.125222   0.086140  13.063  &lt; 2e-16 ***
-PARAM_RUN_DAY10        0.140827   0.121821   1.156  0.24793    
-PARAM_RUN_DAY11        0.072423   0.121821   0.595  0.55230    
-PARAM_RUN_DAY12       -0.160022   0.121821  -1.314  0.18927    
-PARAM_RUN_DAY13        0.344302   0.121821   2.826  0.00480 ** 
-PARAM_RUN_DAY14        0.323985   0.121821   2.660  0.00794 ** 
-PARAM_RUN_DAY15       -0.102205   0.121821  -0.839  0.40167    
-PARAM_RUN_DAY16       -0.340057   0.121821  -2.791  0.00534 ** 
-PARAM_RUN_DAY17        0.143591   0.121821   1.179  0.23877    
-PARAM_RUN_DAY18        0.178917   0.121821   1.469  0.14221    
-PARAM_RUN_DAY19        0.044468   0.121821   0.365  0.71516    
-PARAM_RUN_DAY2        -0.112149   0.121821  -0.921  0.35746    
-PARAM_RUN_DAY20        0.095212   0.121821   0.782  0.43463    
-PARAM_RUN_DAY21        0.038140   0.121821   0.313  0.75428    
-PARAM_RUN_DAY22       -0.146143   0.121821  -1.200  0.23054    
-PARAM_RUN_DAY23        0.323213   0.121821   2.653  0.00809 ** 
-PARAM_RUN_DAY24       -0.078143   0.121821  -0.641  0.52136    
-PARAM_RUN_DAY25       -0.042089   0.121821  -0.346  0.72979    
-PARAM_RUN_DAY26        0.034642   0.121821   0.284  0.77618    
-PARAM_RUN_DAY27       -0.084039   0.121821  -0.690  0.49043    
-PARAM_RUN_DAY28       -0.180335   0.121821  -1.480  0.13908    
-PARAM_RUN_DAY29       -0.094220   0.121821  -0.773  0.43944    
-PARAM_RUN_DAY3        -0.046104   0.121821  -0.378  0.70517    
-PARAM_RUN_DAY30       -0.115511   0.121821  -0.948  0.34324    
-PARAM_RUN_DAY31       -0.022118   0.121821  -0.182  0.85596    
-PARAM_RUN_DAY32       -0.072521   0.121821  -0.595  0.55176    
-PARAM_RUN_DAY33       -0.167644   0.121821  -1.376  0.16906    
-PARAM_RUN_DAY34       -0.057893   0.120545  -0.480  0.63114    
-PARAM_RUN_DAY35        0.013470   0.121821   0.111  0.91197    
-PARAM_RUN_DAY36        0.066255   0.121821   0.544  0.58664    
-PARAM_RUN_DAY37       -0.009475   0.121821  -0.078  0.93802    
-PARAM_RUN_DAY38       -0.101167   0.123197  -0.821  0.41173    
-PARAM_RUN_DAY39       -0.022529   0.123197  -0.183  0.85494    
-PARAM_RUN_DAY4         0.041604   0.121821   0.342  0.73278    
-PARAM_RUN_DAY40        0.002465   0.123197   0.020  0.98404    
-PARAM_RUN_DAY41        0.059236   0.123197   0.481  0.63074    
-PARAM_RUN_DAY42        0.051765   0.124687   0.415  0.67811    
-PARAM_RUN_DAY43       -0.085444   0.124687  -0.685  0.49332    
-PARAM_RUN_DAY44        0.048524   0.124687   0.389  0.69723    
-PARAM_RUN_DAY45        0.035523   0.124687   0.285  0.77578    
-PARAM_RUN_DAY46        0.157388   0.124687   1.262  0.20713    
-PARAM_RUN_DAY47        0.008739   0.124687   0.070  0.94414    
-PARAM_RUN_DAY48       -0.117011   0.124687  -0.938  0.34823    
-PARAM_RUN_DAY49       -0.029526   0.126306  -0.234  0.81521    
-PARAM_RUN_DAY5         0.127588   0.121821   1.047  0.29518    
-PARAM_RUN_DAY50        0.015276   0.147112   0.104  0.91732    
-PARAM_RUN_DAY6        -0.168855   0.121821  -1.386  0.16601    
-PARAM_RUN_DAY7         0.024713   0.121821   0.203  0.83928    
-PARAM_RUN_DAY8         0.027749   0.121821   0.228  0.81985    
-PARAM_RUN_DAY9         0.112812   0.121821   0.926  0.35463    
-BATCH_ID_LCPOLAR68367        NA         NA      NA       NA    
-BATCH_ID_LCPOLAR68428        NA         NA      NA       NA    
-BATCH_ID_LCPOLAR68511        NA         NA      NA       NA    
-BATCH_ID_LCPOLAR68590        NA         NA      NA       NA    
-BATCH_ID_LCPOLAR68660        NA         NA      NA       NA    
-BATCH_ID_LCPOLAR68765        NA         NA      NA       NA    
-BATCH_ID_LCPOLAR68829        NA         NA      NA       NA    
-BATCH_ID_LCPOLAR68946        NA         NA      NA       NA    
-BATCH_ID_LCPOLAR69005        NA         NA      NA       NA    
-BATCH_ID_LCPOLAR69092        NA         NA      NA       NA    
-BATCH_ID_LCPOLAR69126        NA         NA      NA       NA    
-BATCH_ID_LCPOLAR69191        NA         NA      NA       NA    
-BATCH_ID_LCPOLAR69200        NA         NA      NA       NA    
+Coefficients: (14 not defined because of singularities)
+                     Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)          1.125222   0.086140  13.063  &lt; 2e-16 ***
+PARAM_RUN_DAY10      0.140827   0.121821   1.156  0.24793    
+PARAM_RUN_DAY11      0.072423   0.121821   0.595  0.55230    
+PARAM_RUN_DAY12     -0.160022   0.121821  -1.314  0.18927    
+PARAM_RUN_DAY13      0.344302   0.121821   2.826  0.00480 ** 
+PARAM_RUN_DAY14      0.323985   0.121821   2.660  0.00794 ** 
+PARAM_RUN_DAY15     -0.102205   0.121821  -0.839  0.40167    
+PARAM_RUN_DAY16     -0.340057   0.121821  -2.791  0.00534 ** 
+PARAM_RUN_DAY17      0.143591   0.121821   1.179  0.23877    
+PARAM_RUN_DAY18      0.178917   0.121821   1.469  0.14221    
+PARAM_RUN_DAY19      0.044468   0.121821   0.365  0.71516    
+PARAM_RUN_DAY2      -0.112149   0.121821  -0.921  0.35746    
+PARAM_RUN_DAY20      0.095212   0.121821   0.782  0.43463    
+PARAM_RUN_DAY21      0.038140   0.121821   0.313  0.75428    
+PARAM_RUN_DAY22     -0.146143   0.121821  -1.200  0.23054    
+PARAM_RUN_DAY23      0.323213   0.121821   2.653  0.00809 ** 
+PARAM_RUN_DAY24     -0.078143   0.121821  -0.641  0.52136    
+PARAM_RUN_DAY25     -0.042089   0.121821  -0.346  0.72979    
+PARAM_RUN_DAY26      0.034642   0.121821   0.284  0.77618    
+PARAM_RUN_DAY27     -0.084039   0.121821  -0.690  0.49043    
+PARAM_RUN_DAY28     -0.180335   0.121821  -1.480  0.13908    
+PARAM_RUN_DAY29     -0.094220   0.121821  -0.773  0.43944    
+PARAM_RUN_DAY3      -0.046104   0.121821  -0.378  0.70517    
+PARAM_RUN_DAY30     -0.115511   0.121821  -0.948  0.34324    
+PARAM_RUN_DAY31     -0.022118   0.121821  -0.182  0.85596    
+PARAM_RUN_DAY32     -0.072521   0.121821  -0.595  0.55176    
+PARAM_RUN_DAY33     -0.167644   0.121821  -1.376  0.16906    
+PARAM_RUN_DAY34     -0.057893   0.120545  -0.480  0.63114    
+PARAM_RUN_DAY35      0.013470   0.121821   0.111  0.91197    
+PARAM_RUN_DAY36      0.066255   0.121821   0.544  0.58664    
+PARAM_RUN_DAY37     -0.009475   0.121821  -0.078  0.93802    
+PARAM_RUN_DAY38     -0.101167   0.123197  -0.821  0.41173    
+PARAM_RUN_DAY39     -0.022529   0.123197  -0.183  0.85494    
+PARAM_RUN_DAY4       0.041604   0.121821   0.342  0.73278    
+PARAM_RUN_DAY40      0.002465   0.123197   0.020  0.98404    
+PARAM_RUN_DAY41      0.059236   0.123197   0.481  0.63074    
+PARAM_RUN_DAY42      0.051765   0.124687   0.415  0.67811    
+PARAM_RUN_DAY43     -0.085444   0.124687  -0.685  0.49332    
+PARAM_RUN_DAY44      0.048524   0.124687   0.389  0.69723    
+PARAM_RUN_DAY45      0.035523   0.124687   0.285  0.77578    
+PARAM_RUN_DAY46      0.157388   0.124687   1.262  0.20713    
+PARAM_RUN_DAY47      0.008739   0.124687   0.070  0.94414    
+PARAM_RUN_DAY48     -0.117011   0.124687  -0.938  0.34823    
+PARAM_RUN_DAY49     -0.029526   0.126306  -0.234  0.81521    
+PARAM_RUN_DAY5       0.127588   0.121821   1.047  0.29518    
+PARAM_RUN_DAY50      0.015276   0.147112   0.104  0.91732    
+PARAM_RUN_DAY6      -0.168855   0.121821  -1.386  0.16601    
+PARAM_RUN_DAY7       0.024713   0.121821   0.203  0.83928    
+PARAM_RUN_DAY8       0.027749   0.121821   0.228  0.81985    
+PARAM_RUN_DAY9       0.112812   0.121821   0.926  0.35463    
+BATCH_ID_LCNEG68421        NA         NA      NA       NA    
+BATCH_ID_LCNEG68507        NA         NA      NA       NA    
+BATCH_ID_LCNEG68586        NA         NA      NA       NA    
+BATCH_ID_LCNEG68656        NA         NA      NA       NA    
+BATCH_ID_LCNEG68761        NA         NA      NA       NA    
+BATCH_ID_LCNEG68824        NA         NA      NA       NA    
+BATCH_ID_LCNEG68942        NA         NA      NA       NA    
+BATCH_ID_LCNEG69001        NA         NA      NA       NA    
+BATCH_ID_LCNEG69088        NA         NA      NA       NA    
+BATCH_ID_LCNEG69122        NA         NA      NA       NA    
+BATCH_ID_LCNEG69190        NA         NA      NA       NA    
+BATCH_ID_LCNEG69198        NA         NA      NA       NA    
+BATCH_ID_LCNEG69249        NA         NA      NA       NA    
+BATCH_ID_LCNEG69255        NA         NA      NA       NA    
 ---
 Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 
@@ -860,6 +911,43 @@ plt &lt;- (ggplot(data = resid_df, aes(residuals))
 
 plt</code></pre>
 <p><img src="figure/sample_covariate_analysis.Rmd/plot_residuals-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_residuals-1">
+Past versions of plot_residuals-1.png
+</button>
+</p>
+<div id="fig-plot_residuals-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/meliao/metabolomics_analysis/blob/f985f755b7cc8773b5b10fdbdcad2337af4c3579/docs/figure/sample_covariate_analysis.Rmd/plot_residuals-1.png" target="_blank">f985f75</a>
+</td>
+<td>
+meliao
+</td>
+<td>
+2019-11-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>The residuals for this one are not normal. I will regress out the day parameter using <code>data/regress_out_dates.R</code> and <code>data/regress_out_dates.sh</code> and I will continue the analysis in <a href="date_control_regression_results.html">Date-Control Regression Results</a></p>
 <br>
 <p>

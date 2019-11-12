@@ -74,12 +74,12 @@ bb <- corr_heatmap(cov_numeric)
 bb
 ```
 
-I think I will now only focus on `PARAM_RUN_DAY` and `BATCH_ID_LCPOLAR`.
+I think I will now only focus on `PARAM_RUN_DAY` and `BATCH_ID_LCNEG`.
 
 ```{r drop other batch IDs}
 list_to_drop <- c('BATCH_ID_LCPOSLAT',
                   'BATCH_ID_LCPOSEAR',
-                  'BATCH_ID_LCNEG')
+                  'BATCH_ID_LCPOLAR')
 for(i in list_to_drop){
   covariates[[i]] <- NULL
 }
@@ -89,7 +89,7 @@ for(i in list_to_drop){
 
 I will choose a random meatabolite to regress:
 
-$$ Metabolite = \sum \beta_i \ \text{BATCH_ID_LCPOLAR}_i + \sum \beta_i \ \text{PARAM_RUN_DAY}_i $$
+$$ Metabolite = \sum \beta_i \ \text{BATCH_ID_LCNEG}_i + \sum \beta_i \ \text{PARAM_RUN_DAY}_i $$
 
 ```{r run_one_regression}
 
