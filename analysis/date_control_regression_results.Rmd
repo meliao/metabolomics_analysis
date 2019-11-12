@@ -1,0 +1,159 @@
+---
+title: "Date-Control Regression Results"
+author: "Owen Melia"
+date: "11/11/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Load Data
+
+```{r load data}
+data_dir <- "~/projects/metabolomics/data/date_controlled/"
+
+
+resid_df <- read.csv(file.path(data_dir, 'imputed_data_date_controlled_resids.txt'))
+coeff_df <- read.csv(file.path(data_dir, 'imputed_data_date_controlled_coefficients.txt'))
+pval_df <- read.csv(file.path(data_dir, 'imputed_data_date_controlled_pvals.txt'))
+```
+
+## Look at Residuals
+
+```{r load_residuals}
+resid_df <- read.csv('~/projects/metabolomics/data/date_controlled/imputed_data_date_controlled_resids.txt')
+rownames(resid_df) <- resid_df$X
+resid_df$X <- NULL
+```
+
+
+```{r residual normality test}
+testnormality = function(df, print_bad_cols = FALSE, threshold = 0.01)
+{
+  cc=0
+  pvec = rep(NA,ncol(df))
+  for(ii in 1:ncol(df)){
+    pp = shapiro.test(df[,ii])$p
+    pvec[ii] = pp
+    if(pp < threshold){
+      if(print_bad_cols){
+        print("-----")
+        print(colnames(df)[ii])
+        print(pp)
+      }
+      cc=cc+1
+    }
+  }
+  print(paste0("Non-normal columns according to Shapiro < ", threshold))
+  print(cc)
+  pvec
+}
+
+resid_df_normality_pvec <- testnormality(resid_df)
+
+```
+
+## Residuals From Inverse-Normalized Regression
+
+I ran the same regression but with the columns of the metabolomics data matrix inverse-normalized. I'll load the data and run the Shapiro test.
+
+```{r inverse_norm regression}
+resid_inv_norm_df <- read.csv(file.path(data_dir, 'imputed_data_date_controlled_inv_normalized_resids.txt'))
+rownames(resid_inv_norm_df) <- resid_inv_norm_df$X
+resid_inv_norm_df$X <- NULL
+inv_norm_pvec <- testnormality(resid_inv_norm_df)
+```
+
+
+When viewing the next plot, I had to remind myself that smaller p-values indicate that the sample is not normally distributed. The x axis plots p-values on the log scale, so the smaller p-values are on the left. 
+
+A vertical line at the $\alpha = 0.01$ threshold is drawn
+```{r shapiro_test_pvals}
+
+shapiro_pval_df <- data.frame(standard = (resid_df_normality_pvec), 
+                      inverse_normalized = (inv_norm_pvec))
+
+shapiro_pval_df <- shapiro_pval_df %>% pivot_longer(everything(), names_to = 'distribution', values_to = 'pval')
+plt <- (ggplot(data = shapiro_pval_df, aes(pval, fill = distribution, color = distribution))
+        + geom_density(alpha = 0.1)
+        + labs(x = "Log of pvalue of Shapiro Test",
+               y = "Density"
+               )
+        + geom_vline(xintercept = 0.01)
+        + scale_x_log10()
+        )
+plt
+```
+
+
+## Look at PVals
+
+```{r summarize pvals}
+
+rownames(pval_df) <- pval_df$X
+pval_df$X <- NULL
+
+pval_df_t <-data.frame(t(pval_df))
+
+summary(pval_df_t)
+
+```
+
+
+The pvalues are tricky to plot in a useful way. They are concentrated around zero, with a lot of outliers uniformely distributed between 0 and 1. 
+
+```{r plot_pvals}
+
+pval_df_t$metabolite <- rownames(pval_df_t)
+
+pval_df_long <- pval_df_t %>% pivot_longer( -c(metabolite), names_to = 'Day', values_to = 'pval')
+
+plt <- (ggplot(data = pval_df_long, aes(metabolite, Day, fill = pval))
+        + geom_tile()
+        + theme(axis.text.x = element_blank(),
+                axis.ticks.x = element_blank(),
+                axis.ticks.y = element_blank(),
+                axis.text.y = element_blank())
+        )
+# plt
+
+plt_2 <- (ggplot(data = pval_df_long, aes(pval))
+          + geom_histogram(bins = 200))
+# plt_2
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

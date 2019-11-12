@@ -1,0 +1,271 @@
+---
+title: "Metabolomics Data Analysis"
+author: "Owen Melia"
+date: "11/8/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+
+# Sourcing the lab's paper theme. 
+
+source('~/projects/lab-tools/paper_themes.R')
+```
+
+## Load Data
+
+I separated the excel files provided into three files, one with the metabolite samples, one with study metadata that seems like we should consider as confounders, and one with chemical information about the metabolites
+```{r data_load}
+
+imputed_df <- read.csv('~/projects/metabolomics/data/metabolomics_converted/imputed-data-7-11-2016-samples.txt', sep = '\t')
+print(nrow(imputed_df))
+print(ncol(imputed_df))
+
+keys_df <- data.frame(DIAG_code = imputed_df$DIAG_code, CLIENT_IDENTIFIER = imputed_df$CLIENT_IDENTIFIER)
+
+imputed_df$DIAG_code <- NULL
+imputed_df$CLIENT_IDENTIFIER <- NULL
+
+```
+
+Hopefully, removing NA values won't remove too many study participants.
+```{r remove_na}
+
+imputed_df <- drop_na(imputed_df)
+
+
+# There are two factor columns:
+imputed_df <- imputed_df %>% select_if(is.numeric)
+
+zero_var <- function(v)any(sd(v) != 0)
+imputed_df <- imputed_df %>% select_if(zero_var)
+
+print(nrow(imputed_df))
+print(ncol(imputed_df))
+```
+
+## What is the scale? 
+
+```{r, plot_mean_var}
+means <- sapply(imputed_df, mean)
+col_devs <- sapply(imputed_df, sd)
+
+df_summ_stats <- data.frame(means = means, stddevs = col_devs, metabolites = colnames(imputed_df))
+
+plt <- (ggplot(data = df_summ_stats, aes(means, stddevs)) 
+        + geom_point() 
+        + scale_y_log10()
+        + scatter_base_theme_())
+plt
+```
+
+
+Ok, so we have some outliers when looking at means. Let's find those outliers. Here I am choosing 10 as an arbitrary threshold for outliers. 
+
+```{r find_outliers}
+outlier_df <- df_summ_stats[df_summ_stats$means > 10,]
+
+outlier_names <- outlier_df$metabolites
+
+print(outlier_df)
+```
+
+Here are the the histograms of the two metabolites with the highest means: 
+
+
+```{r salicylate_hist}
+
+plt <-(ggplot(data = imputed_df, aes(salicylate, stat(density))) 
+       + geom_histogram(bins = 200)
+       + scatter_base_theme_())
+
+
+plt
+
+```
+
+
+```{r other_hist}
+
+plt <-(ggplot(data = imputed_df, aes(X2.hydroxyhippurate..salicylurate. , stat(density))) 
+       + geom_histogram(bins = 200)
+       + scatter_base_theme_())
+plt
+
+```
+
+
+## Normality Testing
+
+``` {r normality_func_defns}
+
+invnorm = function(x) {
+  if(is.null(dim(x))) res = invnorm.vector(x) else
+  res=apply(x,2,invnorm.vector)
+  res
+}
+invnorm.vector = function(x) {yy = rank(x)/(length(x)+1); qnorm(yy)}
+
+testnormality = function(df, print_bad_cols = FALSE, threshold = 0.01) 
+{
+  cc=0
+  pvec = rep(NA,ncol(df))
+  for(ii in 1:ncol(df)){
+    pp = shapiro.test(df[,ii])$p
+    pvec[ii] = pp
+    if(pp < threshold){
+      if(print_bad_cols){
+        print("-----")
+        print(colnames(df)[ii])
+        print(pp)
+      }
+      cc=cc+1
+    } 
+  }
+  print(paste0("Non-normal columns according to Shapiro < ", threshold))
+  print(cc)
+  pvec
+}
+```
+
+```{r test_normality}
+pvec <- testnormality(imputed_df)
+```
+
+Almost all of the columns fail the Shapiro test. 
+
+```{r inverse_normalize}
+
+inv_nrm_df <- lapply(imputed_df, invnorm)
+inv_nrm_df <- data.frame(inv_nrm_df)
+```
+
+```{r re-test_normality}
+
+pvec<-testnormality(inv_nrm_df)
+
+```
+
+Although there's still a lot failing the Shapiro test, inverse normalization does work on the majority of the columns.
+
+
+## Correlation Heatmap
+
+```{r correlation_heatmap}
+
+corr_heatmap <-function(df, title = "Correlation"){
+  cor_df <- data.frame(cor(df))
+  cor_df$rows <- rownames(cor_df)
+  df_for_plot <- cor_df %>% pivot_longer(-rows, names_to = 'columns', values_to ='correlation')
+  plt <- (ggplot(data = df_for_plot, aes(rows, columns, fill = correlation))
+          + geom_tile()
+          + theme(axis.ticks.y = element_blank(),
+                  axis.ticks.x = element_blank(),
+                  axis.text.x = element_blank(),
+                  axis.text.y = element_blank())
+          + labs(title = title))
+  
+  return(plt)
+}
+bb <- corr_heatmap(imputed_df)
+
+bb
+```
+
+
+## Singular Values
+
+Is the data low-rank? Or approximately low-rank?
+
+``` {r principal components}
+
+svd_results <- svd(imputed_df)
+
+
+svd_df <- data.frame(singular_values = svd_results$d)
+
+summary(svd_df)
+```
+
+```{r plot singular_values}
+svd_df$index <- as.integer(rownames(svd_df))
+
+plt <- (ggplot(data = svd_df, aes(index, singular_values)) 
+        + geom_point()
+        + labs(x = 'Index',
+               y = 'Singular Value',
+               title = 'Singular Values of the Imputed Data Matrix')
+        + scatter_base_theme_()
+        )
+plt
+```
+
+
+```{r plot_two_principal_components}
+pca <- prcomp(imputed_df)
+
+pc_matrix <- pca$rotation
+
+project <-function(df, pcs = pc_matrix[,1:2]){
+  
+  bb <- as.matrix(df)
+  aa <- bb %*% pcs
+  aa <- data.frame(aa)
+  rownames(aa) <- rownames(df)
+  return(aa)
+}
+
+aa <- project(imputed_df)
+
+plt <- (ggplot(data = aa, aes(PC1, PC2))
+        + geom_point()
+        + scatter_base_theme_())
+
+plt
+```
+
+
+
+<!-- ```{r plot pc} -->
+<!-- col <- ncol(imputed_df) -->
+<!-- rows<- nrow(imputed_df) -->
+<!-- svd_results <- svd(imputed_df, nu = max(col, rows), nv = max(col, rows)) -->
+
+
+<!-- u_matrix <- svd_results$u  -->
+<!-- sigma_matrix <- matrix(0, ncol(u_matrix), 2) -->
+<!-- sigma_matrix[1,1] <- svd_df$singular_values[1] -->
+<!-- sigma_matrix[2,2] <- svd_df$singular_values[2] -->
+<!-- pcs <- u_matrix %*% sigma_matrix -->
+<!-- nrow(pcs) -->
+<!-- nrow(imputed_df) -->
+<!-- nrow(pcs) -->
+<!-- ncol(imputed_df) -->
+<!-- bb <- project(imputed_df, pcs= pcs) -->
+
+<!-- ``` -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

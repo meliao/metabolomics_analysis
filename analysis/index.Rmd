@@ -1,0 +1,15 @@
+---
+title: "Home"
+site: workflowr::wflow_site
+output:
+  workflowr::wflow_html:
+    toc: false
+editor_options:
+  chunk_output_type: console
+---
+
+Welcome to my research website.
+
+ - [Metabolomics Data Analysis](metabolomics_data_analysis.html)
+ - [Covariate Analysis](sample_covariate_analysis.html)
+ - [Date-Control Regression Results](date_control_regression_results.html)

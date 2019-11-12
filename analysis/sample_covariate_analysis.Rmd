@@ -1,0 +1,164 @@
+---
+title: "Examining the Effect of Covariates"
+author: "Owen Melia"
+date: "11/11/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+
+source('~/projects/lab-tools/paper_themes.R')
+
+source('~/projects/metabolomics/workflowr/code/load_imputed_data.R')
+```
+
+## Load Covariates
+
+With the metabolite data came metadata about the experiment. I'd like to consider these as covariates and see if we can control for batch effects. 
+
+```{r load_sample_metadata}
+
+covariates <- read.csv('~/projects/metabolomics/data/metabolomics_converted/imputed-data-7-11-2016-sample-metadata.txt', sep = '\t')
+summary(covariates)
+```
+
+It seems that we should consider all of these as factors
+
+```{r load covariates as factors}
+covariates <- read.csv('~/projects/metabolomics/data/metabolomics_converted/imputed-data-7-11-2016-sample-metadata.txt',
+                       sep = '\t',
+                       colClasses = c('factor'))
+rownames(covariates) <- covariates$DIAG_code
+n_unique <- function(x){length(levels(x))}
+unique_factors <- sapply(covariates, n_unique)
+unique_factors
+```
+
+## Investigating Redundant Covariates
+
+I would guess that there is a lot of redundancy in these data. I will first only look at the batch IDs.
+
+```{r drop_other_values}
+
+list_to_drop <- c('DIAG_code', 
+                  'PARAM_BOX_LOCATION', 
+                  'PARAM_MANIFEST_ORDER', 
+                  'PARAM_SPECIMEN_CONDITION',
+                  'PARAM_LC_COLUMN')
+for(i in list_to_drop){
+  covariates[[i]] <- NULL
+}
+
+```
+
+I will plot a correlation heatmap. The results shown here could be an artifact of the order that R assigned factor levels. 
+
+```{r plot_corr_heatmap}
+corr_heatmap <-function(df, title = "Correlation"){
+  cor_df <- data.frame(cor(df))
+  cor_df$rows <- rownames(cor_df)
+  df_for_plot <- cor_df %>% pivot_longer(-rows, names_to = 'columns', values_to ='correlation')
+  plt <- (ggplot(data = df_for_plot, aes(rows, columns, fill = correlation))
+          + geom_tile()
+          + theme(axis.text.x = element_text(angle = 90))
+          + labs(title = title))
+  
+  return(plt)
+}
+
+cov_numeric <- data.frame(sapply(covariates, as.numeric))
+bb <- corr_heatmap(cov_numeric)
+  
+bb
+```
+
+I think I will now only focus on `PARAM_RUN_DAY` and `BATCH_ID_LCPOLAR`.
+
+```{r drop other batch IDs}
+list_to_drop <- c('BATCH_ID_LCPOSLAT',
+                  'BATCH_ID_LCPOSEAR',
+                  'BATCH_ID_LCNEG')
+for(i in list_to_drop){
+  covariates[[i]] <- NULL
+}
+```
+
+## Regressing Out Covariates
+
+I will choose a random meatabolite to regress:
+
+$$ Metabolite = \sum \beta_i \ \text{BATCH_ID_LCPOLAR}_i + \sum \beta_i \ \text{PARAM_RUN_DAY}_i $$
+
+```{r run_one_regression}
+
+
+covariate_regression <- function(response, covariates){
+  covariates$metabolite <- response
+  reg_obj  <- lm(metabolite ~ . , data = covariates)
+  return(reg_obj)
+}
+
+single_reg_obj <- covariate_regression(imputed_df$X1.2.dilinoleoyl.GPC..18.2.18.2., covariates)
+
+print(summary(single_reg_obj))
+```
+
+
+So it still looks like there are singularities. I will look at just the run day. 
+
+
+## Regression on Run Day
+
+
+```{r re construct covariates}
+
+
+covariates <- read.csv('~/projects/metabolomics/data/metabolomics_converted/imputed-data-7-11-2016-sample-metadata.txt',
+                       sep = '\t',
+                       colClasses = c('factor'))
+rownames(covariates) <- covariates$DIAG_code
+list_to_drop <- c('DIAG_code', 
+                  'PARAM_BOX_LOCATION', 
+                  'PARAM_MANIFEST_ORDER', 
+                  'PARAM_SPECIMEN_CONDITION',
+                  'PARAM_LC_COLUMN',
+                  'BATCH_ID_LCPOSLAT',
+                  'BATCH_ID_LCPOSEAR',
+                  'BATCH_ID_LCPOLAR',
+                  'BATCH_ID_LCNEG')
+for(i in list_to_drop){
+  covariates[[i]] <- NULL
+}
+```
+
+```{r new regression}
+reg_obj <- covariate_regression(imputed_df$X1.7.dimethylurate, covariates)
+print(summary(reg_obj))
+```
+
+## Look at Residuals
+
+Here I am plotting the density of the residuals in red and the normal approximation in blue.
+```{r plot_residuals}
+resid_df <- data.frame(residuals = single_reg_obj$residuals)
+
+plt <- (ggplot(data = resid_df, aes(residuals))
+        + geom_density(color = 'red') 
+        + bar_base_theme_()
+        + stat_function(fun = dnorm, 
+                        color = 'blue',
+                        args = list(mean = mean(resid_df$residuals),
+                                    sd = sd(resid_df$residuals))))
+
+plt
+
+
+
+```
+
+
+The residuals for this one are not normal. I will regress out the day parameter using `data/regress_out_dates.R` and `data/regress_out_dates.sh` and I will continue the analysis in [Date-Control Regression Results](date_control_regression_results.html)
+
+
