@@ -12,7 +12,7 @@ navbar:
   right:
   - icon: fa-github
     text: Source code
-    href: https://github.com/meliao/metabolomics
+    href: https://github.com/meliao/metabolomics_analysis
 output:
   workflowr::wflow_html:
     toc: yes
